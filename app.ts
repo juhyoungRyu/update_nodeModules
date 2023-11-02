@@ -110,13 +110,13 @@ async function removeTarget(folderName: string): Promise<boolean> {
     if (existsSync(TARGET_PATH)) {
       logger(`${TARGET_NAME_ARRAY[i]} :  Exist`, "info");
       await rm(TARGET_PATH, { recursive: true });
-      logger(`delete : ${TARGET_NAME_ARRAY[i]}`, "success");
+      logger(`Delete : ${TARGET_NAME_ARRAY[i]}`, "success");
     } else {
       logger(`${TARGET_NAME_ARRAY[i]} : Not Exists`, "info");
     }
   }
 
-  logger("remove", "success");
+  logger("Remove", "success");
   return true;
 }
 
@@ -129,7 +129,7 @@ async function removeTarget(folderName: string): Promise<boolean> {
 async function installNodeModules(folderName: string): Promise<boolean> {
   const cwd = path.join(DIRECTORY_PATH, folderName);
 
-  logger(`working in`, "info", cwd);
+  logger(`Working In`, "info", cwd);
   logger("[node_modules] Start", "install");
 
   try {
