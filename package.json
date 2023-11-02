@@ -1,0 +1,24 @@
+{
+  "name": "update_all_lambda",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "build": "tsc app",
+    "update": "node app",
+    "dev": "pnpm build && pnpm run update"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/execa": "^2.0.0",
+    "@types/node": "^20.8.10",
+    "ora": "^7.0.1",
+    "shelljs": "^0.8.5",
+    "typescript": "^5.2.2"
+  },
+  "devDependencies": {
+    "@types/shelljs": "^0.8.14"
+  }
+}
