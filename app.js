@@ -14,7 +14,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+        while (_) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -35,7 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 // import fs module
 var promises_1 = require("fs/promises");
 var fs_1 = require("fs");
@@ -43,7 +43,7 @@ var shell = require("shelljs");
 // import path module
 var path = require("path");
 // Constant Value
-var DIRECTORY_PATH = "C:/Users/jhryu/Documents/cals/LambdaV2";
+var DIRECTORY_PATH = "../../../CALS/LambdaV2";
 /**
  * @desc
  * 삭제 대상 이름 상수
@@ -106,11 +106,12 @@ function makeDirList() {
                 case 1:
                     files = _a.sent();
                     files = files.filter(function (file) { return file !== "updateAllLambda"; });
-                    logger("Directory reading", "success");
+                    // const files = ['원하는 람다 파일 명']
+                    logger("Directory Reading", "success");
                     return [2 /*return*/, files];
                 case 2:
                     err_1 = _a.sent();
-                    logger("Directory reading", "error");
+                    logger("Directory Reading", "error");
                     return [2 /*return*/, []];
                 case 3: return [2 /*return*/];
             }
@@ -145,7 +146,7 @@ function removeTarget(folderName) {
                     return [4 /*yield*/, (0, promises_1.rm)(TARGET_PATH, { recursive: true })];
                 case 2:
                     _a.sent();
-                    logger("delete : ".concat(TARGET_NAME_ARRAY[i]), "success");
+                    logger("Delete : ".concat(TARGET_NAME_ARRAY[i]), "success");
                     return [3 /*break*/, 4];
                 case 3:
                     logger("".concat(TARGET_NAME_ARRAY[i], " : Not Exists"), "info");
@@ -154,7 +155,7 @@ function removeTarget(folderName) {
                     i++;
                     return [3 /*break*/, 1];
                 case 5:
-                    logger("remove", "success");
+                    logger("Remove", "success");
                     return [2 /*return*/, true];
             }
         });
@@ -171,7 +172,7 @@ function installNodeModules(folderName) {
         var cwd;
         return __generator(this, function (_a) {
             cwd = path.join(DIRECTORY_PATH, folderName);
-            logger("working in", "info", cwd);
+            logger("Working In", "info", cwd);
             logger("[node_modules] Start", "install");
             try {
                 shell.exec("cd ".concat(cwd, " && pnpm i"));
@@ -186,9 +187,37 @@ function installNodeModules(folderName) {
         });
     });
 }
+function updatePackage(folderName) {
+    return __awaiter(this, void 0, void 0, function () {
+        var packagePath, pacakge;
+        var _this = this;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    packagePath = path.join(DIRECTORY_PATH, folderName, "package.json");
+                    return [4 /*yield*/, (function () { return __awaiter(_this, void 0, void 0, function () {
+                            var data;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0: return [4 /*yield*/, (0, promises_1.readFile)(packagePath)];
+                                    case 1:
+                                        data = _a.sent();
+                                        data = data.toString("utf-8");
+                                        return [2 /*return*/, JSON.parse(data)];
+                                }
+                            });
+                        }); })()];
+                case 1:
+                    pacakge = _a.sent();
+                    console.log(pacakge);
+                    return [2 /*return*/, true];
+            }
+        });
+    });
+}
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var lambdaDirList, i, step1, step2;
+        var lambdaDirList;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, makeDirList()];
@@ -199,29 +228,37 @@ function main() {
                         return [2 /*return*/];
                     }
                     logger("Process", "start");
-                    i = 0;
-                    _a.label = 2;
+                    // 람다 폴더 배열
+                    // for (let i = 0; i < lambdaDirList.length; i++) {
+                    //   logger(`Update : ${lambdaDirList[i]}`, "start");
+                    //   const step1 = await removeTarget(lambdaDirList[i]);
+                    //   if (!step1) {
+                    //     continue;
+                    //   }
+                    //   const step2 = await updatePackage(lambdaDirList[i]);
+                    //   const step3 = await installNodeModules(lambdaDirList[i]);
+                    //   if (!step3) {
+                    //     continue;
+                    //   }
+                    //   logger(`Update : ${lambdaDirList[i]}`, "end");
+                    // }
+                    return [4 /*yield*/, updatePackage("CalsComWebLoginPreferenceV2")];
                 case 2:
-                    if (!(i < lambdaDirList.length)) return [3 /*break*/, 6];
-                    logger("Update : ".concat(lambdaDirList[i]), "start");
-                    return [4 /*yield*/, removeTarget(lambdaDirList[i])];
-                case 3:
-                    step1 = _a.sent();
-                    if (!step1) {
-                        return [3 /*break*/, 5];
-                    }
-                    return [4 /*yield*/, installNodeModules(lambdaDirList[i])];
-                case 4:
-                    step2 = _a.sent();
-                    if (!step2) {
-                        return [3 /*break*/, 5];
-                    }
-                    logger("Update : ".concat(lambdaDirList[i]), "end");
-                    _a.label = 5;
-                case 5:
-                    i++;
-                    return [3 /*break*/, 2];
-                case 6:
+                    // 람다 폴더 배열
+                    // for (let i = 0; i < lambdaDirList.length; i++) {
+                    //   logger(`Update : ${lambdaDirList[i]}`, "start");
+                    //   const step1 = await removeTarget(lambdaDirList[i]);
+                    //   if (!step1) {
+                    //     continue;
+                    //   }
+                    //   const step2 = await updatePackage(lambdaDirList[i]);
+                    //   const step3 = await installNodeModules(lambdaDirList[i]);
+                    //   if (!step3) {
+                    //     continue;
+                    //   }
+                    //   logger(`Update : ${lambdaDirList[i]}`, "end");
+                    // }
+                    _a.sent();
                     logger("Process", "end");
                     return [2 /*return*/];
             }

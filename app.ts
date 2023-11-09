@@ -1,5 +1,5 @@
 // import fs module
-import { readdir, rm } from "fs/promises";
+import { readFile, readdir, rm, writeFile } from "fs/promises";
 import { existsSync } from "fs";
 
 import * as shell from "shelljs";
@@ -8,7 +8,7 @@ import * as shell from "shelljs";
 import * as path from "path";
 
 // Constant Value
-const DIRECTORY_PATH = "C:/Users/jhryu/Documents/cals/LambdaV2";
+const DIRECTORY_PATH = "../../../CALS/LambdaV2";
 
 /**
  * @desc
@@ -77,6 +77,9 @@ async function makeDirList(): Promise<string[]> {
   try {
     let files: string[] = await readdir(DIRECTORY_PATH);
     files = files.filter((file) => file !== "updateAllLambda");
+
+    // const files = ['원하는 람다 파일 명']
+
     logger("Directory Reading", "success");
     return files;
   } catch (err) {
@@ -117,6 +120,7 @@ async function removeTarget(folderName: string): Promise<boolean> {
   }
 
   logger("Remove", "success");
+
   return true;
 }
 
@@ -142,6 +146,34 @@ async function installNodeModules(folderName: string): Promise<boolean> {
   }
 }
 
+async function updatePackage(folderName: string): Promise<boolean> {
+  const packagePath = path.join(DIRECTORY_PATH, folderName, "package.json");
+
+  let data: any = await readFile(packagePath).then(async (data) => {
+    return await JSON.parse(data.toString("utf-8"));
+  });
+
+  await Object.assign(
+    data.devDependencies,
+    { "@aws-sdk/client-sesv2": "^3" },
+    { "@cals-framework/efsModule": "^*" }
+  );
+
+  await rm(packagePath);
+  logger(`Delete : old package.json`, "success");
+
+  try {
+    await writeFile(packagePath, Buffer.from(JSON.stringify(data)), "utf8");
+    logger("Make : new pacakge.json", "success");
+
+    return true;
+  } catch (err: any) {
+    logger(`${err.message}`, "error");
+
+    return false;
+  }
+}
+
 async function main() {
   const lambdaDirList = await makeDirList();
   // Error Case #1
@@ -157,17 +189,27 @@ async function main() {
 
     const step1 = await removeTarget(lambdaDirList[i]);
     if (!step1) {
+      logger(`Error : Step1`, "error");
       continue;
     }
 
-    const step2 = await installNodeModules(lambdaDirList[i]);
+    const step2 = await updatePackage(lambdaDirList[i]);
 
     if (!step2) {
+      logger(`Error : Step2`, "error");
+      continue;
+    }
+
+    const step3 = await installNodeModules(lambdaDirList[i]);
+
+    if (!step3) {
+      logger(`Error : Step3`, "error");
       continue;
     }
 
     logger(`Update : ${lambdaDirList[i]}`, "end");
   }
+
   logger("Process", "end");
 }
 
